@@ -7,7 +7,7 @@ import std.conv;
 import std.json;
 import std.stdio : writeln;
 import std.variant;
-
+import core.stdc.stdint;
 
 // la variable d'un etat peut etre une variable simple, un ensemble de variables entre 2 limites, une liste de variable, une limite haute ou basse
 // VALUE : temperature, distance vers le premier obsacel devant, vitesse, nombre de visages détectés, camera prete, ...
@@ -22,6 +22,8 @@ enum StateDimension { NULL, VALUE, INTERVAL, SET, MIN, MAX }
 // - AUTONOMOUS : complètement indépendant de notre controle (temperature exterieure, date, ...), 
 enum StateControl { NULL, FULL_CONTROL, PARTIAL_CONTROL, AUTONOMOUS }
 
+// the state with higher priority!
+const uint MAX_PRIORITY = UINT32_MAX;
 
 class GenericState {
 	ulong id;

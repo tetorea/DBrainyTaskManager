@@ -28,7 +28,8 @@ class ActionPath{
 	ulong nbOfCallToIgnore = 0;		// number of calls to this actionPath that will be ignored. If the actionPath has been called a number of times unsuccessfully, we can set this value so that the actionPath will be ignored the next times it could be used.
 	bool activated = true;			// actionPath can be deactivated if it's never successful
 
-	GenericState[] startStates;		// les etats de depart
-	GenericState[] endStates;		// les etats obtenus apres les actions
-	GenericAction[] actionList;		// liste des actions effectuees, dans l'ordre!
+	GenericState[] startStates;		// States when the ActionPath is called
+	GenericState[] endStates;		// States when the ActionPath is finished
+	ulong[] actionIdList;			// list of the IDs of the actions in the path
 }
+

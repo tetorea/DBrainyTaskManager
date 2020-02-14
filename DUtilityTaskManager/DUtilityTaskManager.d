@@ -8,9 +8,12 @@ import std.variant;
 
 import State;
 import Ressources;
-
+import Utils;
 
 void main(string[] args) {
+	
+	log = Log(stderrLogger, stdoutLogger(LogLevel.info), fileLogger("DUTM_log"));
+
 	float f = 3.5;
 	string str = "dsfgsdgf";
 	int[] iarr;
@@ -77,43 +80,6 @@ void main(string[] args) {
 
 /+
 
-class Systeme{
-ulong id;
-string nom;
-
-Etat[] listeEtats;						// tous les etats possibles du systeme
-Action[] listeActions;					// toutes les actions possibles du systeme
-Contrainte[] listeContraintes;			// toutes les contraintes possibles du systeme
-RessourcesPhysiques[] listeRessources;	// les ressources du systeme
-
-Etat[] etatsCourants;					// les etats actuels du systeme
-Etat[] etatsVoulus;						// les etats a atteindre, chaque etat a une priorite : 1 -> but ultime, 2 -> but à faire avant 1, ...une tache de priorité élevée doit être faite avant les autres
-
-// Etat[][] etatsVoulusProgrammes;		// prevoir des etats que l'on voudra atteindre a une certaine date/heure ?? dans ce cas, il faudra ajouter le timing voulu pour chaque ensemble
-
-
-////////////////////////////////////////////
-// Mecanismes pour la simulation
-Etat[] etatsTmp;						// les etats utilises pendant la simulation
-RessourcesPhysiques[] ressourcesTmp;	// l'etat des ressources pendant la simulation
-
-Trajectoire[] trajectoiresPossibles;	// liste des trajectoires possibles pour atteindre un ensemble d'etats donné à partir de l'ensemble d'états courants
-ulong trajectoireChoisie = -1;			// l'indice de la trajectoire choisie (= avec le plus grand score) dans les trajectoiresPossibles
-double scoreTrajectoireChoisie = 0;		// meilleur score 
-
-
-// on ne peut pas faire de graph simple car a partir d'un etat, une action est possible ou non suivant les autres etats!!
-// on garde en memoire les suites d'actions calculées et la suite utilisee pour passer d'un ensemble d'etats à un autre ensemble!
-// .. pour augmenter la vitesse de calcul apres coup
-Trajectoire[] grandesActionsPassees;
-
-void tick(){
-// regulierement, le systeme :
-//  - teste les actions en cours (finies? en attente? execution trop longue, il faut agreger? ...)
-//  - regarde si des actions sont en attente d'etats specifiques et teste ces etats si oui
-//  - 
-}
-}
 
 /*
 Fonctions pour 

@@ -434,11 +434,12 @@
  </Config>
  <Folder name="DUtilityTaskManager">
   <File path="ActionPath.d" />
-  <File path="GenericAction.d" />
+  <File path="AutonomousSystem.d" />
   <File path="Constraint.d" />
   <File path="DUtilityTaskManager.d" />
-  <File path="Ressources.d" />
+  <File path="GenericAction.d" />
   <File path="GenericState.d" />
+  <File path="Ressources.d" />
   <File path="Utils.d" />
  </Folder>
 </DProject>
