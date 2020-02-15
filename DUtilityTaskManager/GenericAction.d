@@ -7,6 +7,8 @@ import Ressources;
 import std.datetime.stopwatch : benchmark, StopWatch, AutoStart;
 import core.time : Duration;
 import std.conv;
+import std.variant;
+
 
 class GenericAction {
 	// action identification
@@ -32,7 +34,7 @@ class GenericAction {
 	Constraint preConditions;		// contraintes à résoudre avant d'activer l'action. Ces contraintes dépendent d'états dont le système a une influence sur les valeurs
 	Constraint preRequisites;		// contraintes à résoudre avant d'activer l'action. Ces contraintes dépendent d'états sur lesquels on n'a pas d'influence. On doit juste attendre...
 	SystemRessources[] ressources;	// liste de tous les éléments qui sont utilisés pendant cette action. 2 actions ne peuvent pas etre executees en meme temps si elles utilisent la meme ressource!
-	double[] parameters;			// les parametres a passer dans l'action, le programme devra essayer plusieurs valeurs pour chaque parametre afin de trouver une bonne solution!
+	Variant[] optimalParameters;	// les parametres a passer éventuellement dans l'action, le programme devra essayer plusieurs valeurs pour chaque parametre afin de trouver une bonne solution!
 	GenericState[] results;			// liste des états modifiés par cette action
 
 	long maxWaitingTimeForPreConditions = 0;	// temps d'attente max pour que les preconditions soient remplies
@@ -47,6 +49,21 @@ class GenericAction {
 	bool interrupted = false;		// flag mis a vrai si l'action doit etre / a ete interrompue (attenteMaxAction atteint, action prioritaire doit prendre le dessus...)
 
 	string errorLog = "";
+
+
+	this(   ulong id = 0, 
+			string name = "", 
+			string description = "", 
+			uint priority = 0, 
+			SystemRessources[] ressources = [SystemRessources.NULL]
+			 ) 
+    { 
+		this.id = id;
+		this.name = name;
+		this.description = description;
+		this.priority = priority;
+		this.ressources = ressources;
+	}
 
 
 	//// FUNCTIONS THAT NEED TO BE OVERWRITTEN

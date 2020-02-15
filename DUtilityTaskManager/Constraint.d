@@ -10,12 +10,33 @@ class Constraint {
     string expression = ""; // expression de la contrainte. A remplir soi-meme, ce sera juste pour debug! ex : "temperature < 40 AND camera = true"
     ulong[] idTestedStates; // la liste des ID des etats qui seront testés dans la fonction contrainteVerifiee
 
-    // to override !
+	this(
+			ulong id = 0,
+			string name = "",
+			string expression = "",
+			ulong[] idTestedStates = []
+		 ){
+			this.id = id;
+			this.name = name;
+			this.expression = expression;
+			this.idTestedStates = idTestedStates;
+	}
+
+    // function pointer to initialize
     // arguments :
     // - the list of the system current states
     // - the list of states needing to be modified
     // output :
     // - true if some states need to be modified to satisfy the constraint
-    abstract bool WaitingStates( GenericState*[] systemStates, GenericState*[] statesNeedingModifications );
+    bool function( const ref GenericState[] systemStates, ref GenericState[] statesNeedingModifications ) WaitingStates = null;
 }
+
+
+// examples of WaitingStates functions :
+
+bool WaitingAtHomeState( const ref GenericState[] systemStates, ref GenericState[] statesNeedingModifications )
+{
+	return true;
+}
+
 

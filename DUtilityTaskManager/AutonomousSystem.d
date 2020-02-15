@@ -69,6 +69,40 @@ class AutonomousSystem{
 		return true;
 	}
 
+	bool addPossibleAction( GenericAction ga ){
+		if( allPossibleActions == null ) {
+			allPossibleActions ~= ga;
+			return true;
+		}
+
+		// test if the action ID is already used by another action in the list
+		foreach( GenericAction g; allPossibleActions ) 
+			if( g.id == ga.id ) { 
+				log.warn("Action ID already exist in the list"); 
+				return false; 
+			}
+
+		allPossibleActions ~= ga;
+		return true;
+	}
+
+	bool addPossibleConstraint( Constraint con ){
+		if( allPossibleConstraints == null ) {
+			allPossibleConstraints ~= con;
+			return true;
+		}
+
+		// test if the constraint ID is already used by another constraint in the list
+		foreach( Constraint c; allPossibleConstraints ) 
+			if( c.id == con.id ) { 
+				log.warn("Constraint ID already exist in the list"); 
+				return false; 
+			}
+
+		allPossibleConstraints ~= con;
+		return true;
+	}
+
 
 	int computePossiblePaths(){
 		if( allPossibleStates.length < 1 ) {
@@ -92,6 +126,8 @@ class AutonomousSystem{
 			return 0;
 		}
 
+		// ... 
+
 		return 0;
 	};
 
@@ -112,12 +148,33 @@ class AutonomousSystem{
 		as.name = "TESTSystem";
 		as.description = "Description System";
 
-		GenericState gs1 = new GenericState( Variant(0), 1, "moved Distance", StateDimension.VALUE, StateControl.FULL_CONTROL, 5, [SystemRessources.NULL] );
-
+		// adding States
+		GenericState gs1 = new GenericState( Variant(0.0), 1, "moved Distance", StateDimension.VALUE, StateControl.FULL_CONTROL, 5, [SystemRessources.NULL] );
 		addPossibleState( gs1 );
 		assert( allPossibleStates.length == 1 );
+		
+		addPossibleState( gs1 );	// id is the same, so shouldn't be added!
+		assert( allPossibleStates.length == 1 );
 
-		//GenericState[] allPossibleStates;
+		addPossibleState( new GenericState( Variant(0), 2, "face recognized", StateDimension.VALUE, StateControl.FULL_CONTROL, 0, [SystemRessources.CAMERA] ) );
+		assert( allPossibleStates.length == 2 );
+
+		addPossibleState( new GenericState( Variant(0), 3, "At Home", StateDimension.VALUE, StateControl.FULL_CONTROL, 20, [SystemRessources.NULL] ) );
+		assert( allPossibleStates.length == 3 );
+
+
+		// adding Constraints
+		addPossibleConstraint( new Constraint( 1, "At charging place", "Robot is connected to its charger", [3] ) );
+		assert( allPossibleConstraints.length == 1 );
+		allPossibleConstraints[$-1].WaitingStates = WaitingAtHomeState;
+
+
+		// adding Actions
+		GenericAction ga1 = new GenericAction( 1, "Motion", "action to move the robot toward a given 2D location", 10 );
+
+		addPossibleAction( ga1 );
+
+
 		//GenericAction[] allPossibleActions;
 		//Constraint[] allPossibleConstraints;
 	}
