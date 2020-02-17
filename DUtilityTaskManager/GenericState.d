@@ -61,7 +61,7 @@ class GenericState {
 	bool singleValue(){ return valueLength == 1; }
 	bool multipleValue(){ return valueLength > 1; }
 
-	bool testValue(T)( Variant testValue ){
+	bool testValue(T)( const Variant testValue ){
 		if( value.typeBase != testValue.typeBase ) { errorLog = "GenericState.testValue ERR : value and testValue have different types"; return false; }
 
 		switch( dim ){

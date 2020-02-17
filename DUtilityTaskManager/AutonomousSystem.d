@@ -156,10 +156,10 @@ class AutonomousSystem{
 		addPossibleState( gs1 );	// id is the same, so shouldn't be added!
 		assert( allPossibleStates.length == 1 );
 
-		addPossibleState( new GenericState( Variant(0), 2, "face recognized", StateDimension.VALUE, StateControl.FULL_CONTROL, 0, [SystemRessources.CAMERA] ) );
+		addPossibleState( new GenericState( Variant(0), 2, "Face Recognized", StateDimension.VALUE, StateControl.FULL_CONTROL, 0, [SystemRessources.CAMERA] ) );
 		assert( allPossibleStates.length == 2 );
 
-		addPossibleState( new GenericState( Variant(0), 3, "At Home", StateDimension.VALUE, StateControl.FULL_CONTROL, 20, [SystemRessources.NULL] ) );
+		addPossibleState( new GenericState( Variant(true), 3, "At Home", StateDimension.VALUE, StateControl.FULL_CONTROL, 20, [SystemRessources.NULL] ) );
 		assert( allPossibleStates.length == 3 );
 
 
