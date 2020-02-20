@@ -2,6 +2,7 @@ module Constraint;
 
 import State;
 import Utils;
+import Ressources;
 
 import std.variant;
 
@@ -41,19 +42,19 @@ bool WaitingAtHomeState( ref GenericState[] systemStates, ref GenericState[] sta
 {
 	// return true if the state "At Home" is true
 	foreach( ref GenericState s; systemStates ){
-		if( s.name != "At Home" ) continue;
-		if( s.testValue!bool( Variant(true) ) ) return true;
+		if( s.name != State_AtHome ) continue;
+		if( s.testValue!bool( Variant(true) ) ) return false;
 		
 		// state needs to be added to the waiting list, if not in already...
 
 		foreach( ref GenericState snm; statesNeedingModifications ){
-			if( snm.name == "At Home" ) return false;
+			if( snm.name == State_AtHome ) return true;
 		}
 
 		statesNeedingModifications ~= s;
-		return false;
+		return true;
 	}
-	log.warn("\"At Home\" state is not in the system list!");
+	log.warn( State_AtHome ~" state is not in the system list!");
 	return false;
 }
 

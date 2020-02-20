@@ -33,8 +33,6 @@ class GenericState {
 	uint priority;						// un etat de priorite 1 doit etre atteint après un état de priorité plus élevé
     SystemRessources[] ressources;		// quelle(s) ressource(s) est liée à cet état
 
-	string errorLog = "";
-
 	Variant value;
 	ulong valueLength;
 
@@ -62,14 +60,14 @@ class GenericState {
 	bool multipleValue(){ return valueLength > 1; }
 
 	bool testValue(T)( const Variant testValue ){
-		if( value.typeBase != testValue.typeBase ) { errorLog = "GenericState.testValue ERR : value and testValue have different types"; return false; }
+		if( value.typeBase != testValue.typeBase ) { log.error( "GenericState.testValue ERR : value and testValue have different types"); return false; }
 
 		switch( dim ){
 			case StateDimension.NULL: return false;
 			case StateDimension.VALUE: return value == testValue;
 
 			case StateDimension.SET: 
-				if( typeid(T) != value.typeBase ){ errorLog = "GenericState.testValue ERR : value and T have different types"; return false; }
+				if( typeid(T) != value.typeBase ){ log.error( "GenericState.testValue ERR : value and T have different types"); return false; }
 				foreach( v; value.get!(T[]) )
 					if( v == testValue ) return true;
 				return false;
@@ -97,8 +95,14 @@ class GenericState {
 	}
 
 	Variant getValue(){
+		if( updateAutonomousValue !is null ) {
+			if( !updateAutonomousValue() ) log.warn( "Error when updating the autonomous value : Value probably incorrect!" );
+		}
 		return value;
 	}
+
+	// a function pointer to update the value of autonomous States
+	bool function() updateAutonomousValue = null;
 
 
 	// -------------------------------------------
@@ -107,12 +111,12 @@ class GenericState {
 	// T : base type (without [] if array)
 	string save(T)(){ 
 		if( typeid(T) != value.typeBase ){ 
-			errorLog = "GenericState.save ERR : value and T have different types"; 
-			return errorLog;
+			log.error( "GenericState.save ERR : value and T have different types"); 
+			return "err";
 		}
 		if( valueLength < 1 ){ 
-			errorLog = "GenericState.save ERR : value not initialized"; 
-			return errorLog;
+			log.error( "GenericState.save ERR : value not initialized"); 
+			return "err";
 		}
 
 		JSONValue jv = [ "id": to!string(id) ];		// cannot read a ulong in json format so I have to use strings..
@@ -129,8 +133,7 @@ class GenericState {
 				jv.object["value"] = JSONValue( value.get!(T) );
 
 		}catch( Exception e ){
-			errorLog = "GenericState.save ERR : "~ e.msg; 
-			writeln( errorLog );
+			log.error( "GenericState.save ERR : "~ e.msg ); 
 			return "";
 		}
 
@@ -146,32 +149,32 @@ class GenericState {
 			writeln("value json : ", resstr );
 			return resstr.to!T;
 		}catch( Exception e ){
-			writeln("Exception : ", e.msg, " | not an integer?" );
+			log.error("Exception : ", e.msg, " | not an integer?" );
 		}
 		try{
 			auto resstr = j.uinteger;
 			writeln("value json : ", resstr );
 			return resstr.to!T;
 		}catch( Exception e ){
-			writeln("Exception : ", e.msg, " | not an uinteger?" );
+			log.error("Exception : ", e.msg, " | not an uinteger?" );
 		}
 		try{
 			auto resstr = j.floating;
 			writeln("value json : ", resstr );
 			return resstr.to!T;
 		}catch( Exception e ){
-			writeln("Exception : ", e.msg, " | not a float?" );
+			log.error("Exception : ", e.msg, " | not a float?" );
 		}
 		try{
 			auto resstr = j.str;
 			writeln("value json : ", resstr );
 			return resstr.to!T;
 		}catch( Exception e ){
-			writeln("Exception : ", e.msg, " | not a string?" );
+			log.error("Exception : ", e.msg, " | not a string?" );
 		}
 		// cannot do the same for .object and .array, compile error with : resstr.to!T
 
-		writeln("Warning : Value type not found, cannot be initialized" );
+		log.warn("Warning : Value type not found, cannot be initialized" );
 
 		return T();
 	}
@@ -209,8 +212,7 @@ class GenericState {
 				setValue( Variant( getJsonValue!T( j["value"] ) ) );
 			}
 		}catch( Exception e ){
-			errorLog = "GenericState.load ERR : "~ e.msg; 
-			writeln( errorLog );
+			log.error( "GenericState.load ERR : "~ e.msg ); 
 			return false;
 		}
 		return true; 
@@ -225,7 +227,7 @@ class GenericState {
 		GenericState etatBatterie = new GenericState( 4522, 1, "etatBatterie", StateType.LONG, StateDimension.VALUE, StateControl.FULL_CONTROL, 5, [SystemRessources.CAMERA, SystemRessources.WHEEL] );
 		assert( etatBatterie.value == 4522 )
 
-			string strJson = etatBatterie.save!long();
+		string strJson = etatBatterie.save!long();
 		writeln("etatBatterie1 : ", strJson );
 
 		GenericState etatBatterie2 = new GenericState( 0 );

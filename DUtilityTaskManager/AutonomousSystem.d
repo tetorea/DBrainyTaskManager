@@ -162,6 +162,9 @@ class AutonomousSystem{
 		addPossibleState( new GenericState( Variant(true), 3, "At Home", StateDimension.VALUE, StateControl.FULL_CONTROL, 20, [SystemRessources.NULL] ) );
 		assert( allPossibleStates.length == 3 );
 
+		addPossibleState( new GenericState( Variant(100), 4, "Battery Level", StateDimension.VALUE, StateControl.AUTONOMOUS, 5, [SystemRessources.NULL] ) );
+		assert( allPossibleStates.length == 4 );
+
 
 		// adding Constraints
 		addPossibleConstraint( new Constraint( 1, "At charging place", "Robot is connected to its charger", [3] ) );
