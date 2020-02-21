@@ -13,6 +13,7 @@ import std.variant;
 class GenericAction {
 	// action identification
 	ulong id;
+	string code = "";
 	string name = "";
 	string description = "";
 	ulong priority = 100;			// used to favor some actions instead of others if all are available
@@ -52,6 +53,7 @@ class GenericAction {
 
 
 	this(   ulong id = 0, 
+			string code = "", 
 			string name = "", 
 			string description = "", 
 			uint priority = 0, 
@@ -59,6 +61,7 @@ class GenericAction {
 			 ) 
     { 
 		this.id = id;
+		this.code = code;
 		this.name = name;
 		this.description = description;
 		this.priority = priority;

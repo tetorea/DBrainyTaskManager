@@ -9,17 +9,21 @@ import std.stdio : writeln;
 import std.variant;
 import core.stdc.stdint;
 
-// la variable d'un etat peut etre une variable simple, un ensemble de variables entre 2 limites, une liste de variable, une limite haute ou basse
-// VALUE : temperature, distance vers le premier obsacel devant, vitesse, nombre de visages détectés, camera prete, ...
-// INTERVAL : distances limites, vitesses limites d'un moteur, ...
-// SET : position 3D, pose, velocity 3D, ...
-// MAX/MIN : temperature limite, heure de départ/arrivée, ...
+/++ 
+The variable inside a State can have different meaning :
+ - VALUE : a single variable. For example: temperature, distance to a goal, speed, number of detected faces, camera ready, ...
+ - INTERVAL : 2 variables delimiting an interval. For example : limit moving distances, speed limits, ...
+ - SET : a list of variables. For example : pose, 3D velocity, charging points position, ...
+ - MAX/MIN : a single variable indicating a threshold. For example : max temperature, starting time, ...
++/
 enum StateDimension { NULL, VALUE, INTERVAL, SET, MIN, MAX }
 
-// un etat peut etre géré :
-// - FULL_CONTROL : par le système directement (position, état de la caméra, ...), 
-// - PARTIAL_CONTROL : en partie influencé par le système (distance entre le système et un autre objet dynamique, ...)
-// - AUTONOMOUS : complètement indépendant de notre controle (temperature exterieure, date, ...), 
+/++ 
+The influence of the system on the state is noted as :
+ - FULL_CONTROL : the system controls the state. For example : position, camera state, ...
+ - PARTIAL_CONTROL : partly influenced by the system. For example : distance between the robot and another dynamic object in the environment, ...
+ - AUTONOMOUS : completely independant from our control. For example : outside temperature, date, ...
++/
 enum StateControl { NULL, FULL_CONTROL, PARTIAL_CONTROL, AUTONOMOUS }
 
 // the state with higher priority!
@@ -27,11 +31,12 @@ const uint MAX_PRIORITY = UINT32_MAX;
 
 class GenericState {
 	ulong id;
+	string code;
 	string name;
 	StateDimension dim;
 	StateControl control;
-	uint priority;						// un etat de priorite 1 doit etre atteint après un état de priorité plus élevé
-    SystemRessources[] ressources;		// quelle(s) ressource(s) est liée à cet état
+	uint priority;							// un etat de priorite 1 doit etre atteint après un état de priorité plus élevé
+    SystemRessources[] ressources;		// the ressources linked to this state
 
 	Variant value;
 	ulong valueLength;
@@ -39,15 +44,17 @@ class GenericState {
 	// -----------------------------------
 	this(   Variant val,
 			ulong id = 0, 
-		 string name = "", 
-		 StateDimension dim = StateDimension.NULL, 
-		 StateControl control = StateControl.NULL, 
-		 uint priority = 0, 
-		 SystemRessources[] ressources = [SystemRessources.NULL]
-			 ) 
+			string code = "", 
+			string name = "", 
+			StateDimension dim = StateDimension.NULL, 
+			StateControl control = StateControl.NULL, 
+			uint priority = 0, 
+			SystemRessources[] ressources = [SystemRessources.NULL]
+		) 
     { 
 		this.value = val;
 		this.id = id;
+		this.code = code;
 		this.name = name;
 		this.dim = dim;
 		this.control = control;
@@ -101,7 +108,7 @@ class GenericState {
 		return value;
 	}
 
-	// a function pointer to update the value of autonomous States
+	// a function pointer to retrieve the value of autonomous States
 	bool function() updateAutonomousValue = null;
 
 
@@ -122,6 +129,7 @@ class GenericState {
 		JSONValue jv = [ "id": to!string(id) ];		// cannot read a ulong in json format so I have to use strings..
 
 		try{
+			jv.object["code"] = JSONValue( code );
 			jv.object["name"] = JSONValue( name );
 			jv.object["dim"] = JSONValue( dim );
 			jv.object["control"] = JSONValue( control );
@@ -149,28 +157,28 @@ class GenericState {
 			writeln("value json : ", resstr );
 			return resstr.to!T;
 		}catch( Exception e ){
-			log.error("Exception : ", e.msg, " | not an integer?" );
+			//log.error("Exception : ", e.msg, " | not an integer?" );
 		}
 		try{
 			auto resstr = j.uinteger;
 			writeln("value json : ", resstr );
 			return resstr.to!T;
 		}catch( Exception e ){
-			log.error("Exception : ", e.msg, " | not an uinteger?" );
+			//log.error("Exception : ", e.msg, " | not an uinteger?" );
 		}
 		try{
 			auto resstr = j.floating;
 			writeln("value json : ", resstr );
 			return resstr.to!T;
 		}catch( Exception e ){
-			log.error("Exception : ", e.msg, " | not a float?" );
+			//log.error("Exception : ", e.msg, " | not a float?" );
 		}
 		try{
 			auto resstr = j.str;
 			writeln("value json : ", resstr );
 			return resstr.to!T;
 		}catch( Exception e ){
-			log.error("Exception : ", e.msg, " | not a string?" );
+			//log.error("Exception : ", e.msg, " | not a string?" );
 		}
 		// cannot do the same for .object and .array, compile error with : resstr.to!T
 
@@ -187,6 +195,9 @@ class GenericState {
 		string strId = ("id" in j).str;
 		if( strId == null ) return false;
 		id = to!ulong( strId );
+
+		code = ("code" in j).str;
+		if( code == null ) return false;
 
 		name = ("name" in j).str;
 		if( name == null ) return false;
@@ -224,7 +235,7 @@ class GenericState {
 	{
 		// fonction appellee juste avant main() si les unit test ont ete activés a la compilation avec le switch -unittest
 		writeln( "Test State LONG - VALUE ..." );
-		GenericState etatBatterie = new GenericState( 4522, 1, "etatBatterie", StateType.LONG, StateDimension.VALUE, StateControl.FULL_CONTROL, 5, [SystemRessources.CAMERA, SystemRessources.WHEEL] );
+		GenericState etatBatterie = new GenericState( 4522, 1, "ETAT_BATT", "etatBatterie", StateType.LONG, StateDimension.VALUE, StateControl.FULL_CONTROL, 5, [SystemRessources.CAMERA, SystemRessources.WHEEL] );
 		assert( etatBatterie.value == 4522 )
 
 		string strJson = etatBatterie.save!long();
@@ -237,7 +248,7 @@ class GenericState {
 
 
 		writeln( "Test State DOUBLE[] - SET ..." );
-		GenericState etatLongueur = new GenericState( [ 3.14, 8841.412, -41.7771 ], 2, "etatLongueur", StateType.DOUBLE, StateDimension.SET, StateControl.PARTIAL_CONTROL, 10, [SystemRessources.ARM] );
+		GenericState etatLongueur = new GenericState( [ 3.14, 8841.412, -41.7771 ], 2, "ETAT_LONG", "etatLongueur", StateType.DOUBLE, StateDimension.SET, StateControl.PARTIAL_CONTROL, 10, [SystemRessources.ARM] );
 		strJson = etatLongueur.save();
 		writeln("etatLongueur : ", strJson );
 
