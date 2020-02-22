@@ -1,0 +1,11 @@
+{
+	"authors": [
+		"torea"
+	],
+	"copyright": "Copyright © 2020, torea",
+	"description": "Autonomous Manager for Robotic/AI Tasks",
+	"license": "proprietary",
+	"name": "dutilitytaskmanager",
+	"sourcePaths":["."],
+	"importPaths":["."],
+}
