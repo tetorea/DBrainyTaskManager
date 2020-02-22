@@ -10,25 +10,30 @@ import std.variant;
 import core.stdc.stdint;
 
 /++ 
-The variable inside a State can have different meaning :
- - VALUE : a single variable. For example: temperature, distance to a goal, speed, number of detected faces, camera ready, ...
- - INTERVAL : 2 variables delimiting an interval. For example : limit moving distances, speed limits, ...
- - SET : a list of variables. For example : pose, 3D velocity, charging points position, ...
- - MAX/MIN : a single variable indicating a threshold. For example : max temperature, starting time, ...
+The variable inside a State can have different meaning, noted as Dimension : <BR>
+  - VALUE : a single variable. For example: temperature, distance to a goal, speed, number of detected faces, camera ready, ...<BR>
+  - INTERVAL : 2 variables delimiting an interval. For example : limit moving distances, speed limits, ...<BR>
+  - SET : a list of variables. For example : pose, 3D velocity, charging points position, ...<BR>
+  - MAX/MIN : a single variable indicating a threshold. For example : max temperature, starting time, ...<BR>
 +/
 enum StateDimension { NULL, VALUE, INTERVAL, SET, MIN, MAX }
 
-/++ 
-The influence of the system on the state is noted as :
- - FULL_CONTROL : the system controls the state. For example : position, camera state, ...
- - PARTIAL_CONTROL : partly influenced by the system. For example : distance between the robot and another dynamic object in the environment, ...
- - AUTONOMOUS : completely independant from our control. For example : outside temperature, date, ...
+/++
+The influence of the system on the state is noted as either :<BR>
+  - FULL_CONTROL : the system controls the state. For example : position, camera state, ...<BR>
+  - PARTIAL_CONTROL : partly influenced by the system. For example : distance between the robot and another dynamic object in the environment, ...<BR>
+  - AUTONOMOUS : completely independant from our control. For example : outside temperature, date, ...<BR>
 +/
 enum StateControl { NULL, FULL_CONTROL, PARTIAL_CONTROL, AUTONOMOUS }
 
-// the state with higher priority!
+/++
+A State can have a priority from 0 (low priority) to MAX_PRIORITY (state to satisfy)
++/
 const uint MAX_PRIORITY = UINT32_MAX;
 
+/++
+the basic State class used to store the value(s) of a specific State
++/
 class GenericState {
 	ulong id;
 	string code;
@@ -63,10 +68,10 @@ class GenericState {
 		valueLength = dimensions( val );
 	}
 
-	bool singleValue(){ return valueLength == 1; }
-	bool multipleValue(){ return valueLength > 1; }
+	bool singleValue() pure nothrow @safe { return valueLength == 1; }
+	bool multipleValue() pure nothrow @safe { return valueLength > 1; }
 
-	bool testValue(T)( const Variant testValue ){
+	bool testValue(T)( const Variant testValue ) {
 		if( value.typeBase != testValue.typeBase ) { log.error( "GenericState.testValue ERR : value and testValue have different types"); return false; }
 
 		switch( dim ){
@@ -96,6 +101,7 @@ class GenericState {
 	// ----------------------------------------------
 
     bool setValue( Variant v ){ 
+		if( v == null ) return false;
 		value = v;
 		valueLength = value.dimensions;
 		return true; 
@@ -108,7 +114,9 @@ class GenericState {
 		return value;
 	}
 
-	// a function pointer to retrieve the value of autonomous States
+	/++ Function pointer to retrieve the value of autonomous States <br>
+	the function must be initialized by the user when the state is autonomous
+	+/
 	bool function() updateAutonomousValue = null;
 
 
@@ -230,13 +238,15 @@ class GenericState {
 	}
 
 
-	/// Example for class State
+	/++
+	Example of GenericState use
+	+/ 
 	unittest
 	{
 		// fonction appellee juste avant main() si les unit test ont ete activés a la compilation avec le switch -unittest
 		writeln( "Test State LONG - VALUE ..." );
 		GenericState etatBatterie = new GenericState( 4522, 1, "ETAT_BATT", "etatBatterie", StateType.LONG, StateDimension.VALUE, StateControl.FULL_CONTROL, 5, [SystemRessources.CAMERA, SystemRessources.WHEEL] );
-		assert( etatBatterie.value == 4522 )
+		assert( etatBatterie.value == 4522 );
 
 		string strJson = etatBatterie.save!long();
 		writeln("etatBatterie1 : ", strJson );
