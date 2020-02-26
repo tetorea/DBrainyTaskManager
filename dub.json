@@ -1,6 +1,0 @@
-{
-    "name": "dutilitytaskmanager",
-    "targetName": "DUtilityTaskManager",
-    "targetType": "executable",
-    "targetPath": "bin"
-}

@@ -1,0 +1,15 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/dutilitytaskmanager
+dutilitytaskmanager.so
+dutilitytaskmanager.dylib
+dutilitytaskmanager.dll
+dutilitytaskmanager.a
+dutilitytaskmanager.lib
+dutilitytaskmanager-test-*
+*.exe
+*.o
+*.obj
+*.lst

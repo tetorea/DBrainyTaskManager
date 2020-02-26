@@ -69,7 +69,7 @@ class GenericAction {
 	}
 
 
-	//// FUNCTIONS THAT NEED TO BE OVERWRITTEN
+	//// FUNCTIONS THAT NEED TO BE INITIALIZED
 
 	// gives an estimate of the states modifications based on a parameter value
 	// return true if we have a result for the given parameter, false otherwise
@@ -79,33 +79,43 @@ class GenericAction {
 	// - paramVal : value of the parameter we want to test
 	// - indiceEtatRes : indices of the states which are influenced by the parameter, in the array systemStateList
 	// - modifiedState : the states modified by the parameter
-	bool parametersInfluenceOnState( ulong paramIndex, double paramVal, ulong[] indiceEtatRes, GenericState[] modifiedState ){ 
-		return false; 
-	}
+	bool function( ulong paramIndex, 
+				   double paramVal, 
+				   ulong[] indiceEtatRes, 
+				   GenericState[] modifiedState ) 
+		parametersInfluenceOnState = null;
+
+	//bool parametersInfluenceOnState( ulong paramIndex, double paramVal, ulong[] indiceEtatRes, GenericState[] modifiedState ){ 
+	//    return false; 
+	//}
 
 	// compute the utility of this action given the current system state
-	double computeUtility()
-	{
-		return 0.0;
-	}
+	bool function() computeUtility = null;
+
+	//double computeUtility()
+	//{
+	//    return 0.0;
+	//}
 
 
 	// put the actions to do once, at the start of the action
 	// if the action cannot be started, return false
-	bool executionInit(){
-		return true;
-	}
+	bool function() executionInit = null;
+	//bool executionInit(){
+	//    return true;
+	//}
 
 	// execute the action core commands 
 	// If possible, the action is completed by executing this function several times
 	// must return FALSE if the task is not finished
 	// must return TRUE if the task has ended correctly
-	bool executionTick()
-	{
-		return false;
-	}
+	bool function() executionTick = null;
+	//bool executionTick()
+	//{
+	//    return false;
+	//}
 
-	//// ...FUNCTIONS THAT NEED TO BE OVERWRITTEN
+	//// ...FUNCTIONS THAT NEED TO BE INITIALIZED
 
 	//// FONCTION POUVANT ETRE APPELEE
 	bool abort()

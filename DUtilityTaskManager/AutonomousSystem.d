@@ -7,6 +7,7 @@ import Ressources;
 import State;
 import Utils;
 
+
 class AutonomousSystem{
 	ulong id;
 	string name = "";
@@ -58,7 +59,7 @@ class AutonomousSystem{
 		this.description = description;
 	}
 
-	bool addPossibleState( GenericState gs ){
+	bool addPossibleState( ref GenericState gs ){
 		if( gs.code in allPossibleStates ){
 			log.warn("State Code "~ gs.code ~" already exists in the list! Replacing the old one..."); 
 		}
@@ -66,7 +67,7 @@ class AutonomousSystem{
 		return true;
 	}
 
-	bool addPossibleAction( GenericAction ga ){
+	bool addPossibleAction( ref GenericAction ga ){
 		if( ga.code in allPossibleActions ){
 			log.warn("Action Code "~ ga.code ~" already exists in the list! Replacing the old one..."); 
 		}
@@ -121,47 +122,52 @@ class AutonomousSystem{
 
 ///
 	unittest{
-		log = Log( stderrLogger, stdoutLogger(LogLevel.info), fileLogger("DUTM_log") );
-		AutonomousSystem as( 1, "TESTSystem", "Description System" );
+		import std.variant;
+
+		log = Log( stderrLogger, stdoutLogger(LogLevel.info), fileLogger("DUTM_test.log") );
+		AutonomousSystem as = new AutonomousSystem( 1, "TESTSystem", "Description System" );
 
 		// adding States
 		GenericState gs1 = new GenericState( Variant(0.0), 1, "MOVED_DIST", "moved Distance", StateDimension.VALUE, StateControl.FULL_CONTROL, 5, [SystemRessources.NULL] );
-		addPossibleState( gs1 );
-		assert( allPossibleStates.length == 1 );
+		as.addPossibleState( gs1 );
+		assert( as.allPossibleStates.length == 1 );
 		
-		addPossibleState( gs1 );	// id is the same, so shouldn't be added!
-		assert( allPossibleStates.length == 1 );
+		as.addPossibleState( gs1 );	// id is the same, so shouldn't be added!
+		assert( as.allPossibleStates.length == 1 );
 
-		addPossibleState( new GenericState( Variant(0), 2, "FACE_RECO", "Face Recognized", StateDimension.VALUE, StateControl.FULL_CONTROL, 0, [SystemRessources.CAMERA] ) );
-		assert( allPossibleStates.length == 2 );
+		GenericState gs2 = new GenericState( Variant(0), 2, "FACE_RECO", "Face Recognized", StateDimension.VALUE, StateControl.FULL_CONTROL, 0, [SystemRessources.CAMERA] );
+		as.addPossibleState( gs2 );
+		assert( as.allPossibleStates.length == 2 );
 
-		addPossibleState( new GenericState( Variant(true), 3, "AT_HOME", "At Home", StateDimension.VALUE, StateControl.FULL_CONTROL, 20, [SystemRessources.NULL] ) );
-		assert( allPossibleStates.length == 3 );
+		GenericState gs3 = new GenericState( Variant(true), 3, "AT_HOME", "At Home", StateDimension.VALUE, StateControl.FULL_CONTROL, 20, [SystemRessources.NULL] );
+		as.addPossibleState( gs3 );
+		assert( as.allPossibleStates.length == 3 );
 
-		addPossibleState( new GenericState( Variant(100), 4, "BATT_LEVEL", "Battery Level", StateDimension.VALUE, StateControl.AUTONOMOUS, 5, [SystemRessources.NULL] ) );
-		assert( allPossibleStates.length == 4 );
+		GenericState gs4 = new GenericState( Variant(100), 4, "BATT_LEVEL", "Battery Level", StateDimension.VALUE, StateControl.AUTONOMOUS, 5, [SystemRessources.NULL] );
+		as.addPossibleState( gs4 );
+		assert( as.allPossibleStates.length == 4 );
 
-		addPossibleState( new GenericState( Variant(0L), 5, "SYS_EXEC_TIME", "System Executing Time", StateDimension.VALUE, StateControl.AUTONOMOUS, 5 ) );
-		assert( allPossibleStates.length == 5 );
+		GenericState gs5 = new GenericState( Variant(0L), 5, "SYS_EXEC_TIME", "System Executing Time", StateDimension.VALUE, StateControl.AUTONOMOUS, 5 );
+		as.addPossibleState( gs5 );
+		assert( as.allPossibleStates.length == 5 );
 
 
 		// adding Constraints
-		addPossibleConstraint( new Constraint( 1, "AT_CHARGE_PLACE", "At charging place", "Robot is connected to its charger", ["AT_HOME"] ) );
-		assert( allPossibleConstraints.length == 1 );
-		allPossibleConstraints[$-1].WaitingStates = WaitingBooleanState;
+		as.addPossibleConstraint( new Constraint( 1, "AT_CHARGE_PLACE", "At charging place", "Robot is connected to its charger", ["AT_HOME"] ) );
+		assert( as.allPossibleConstraints.length == 1 );
+		as.allPossibleConstraints["AT_CHARGE_PLACE"].WaitingStates = &WaitingBooleanState;
 
-		addPossibleConstraint( new Constraint( 2, "BATTERY>50", "Battery > 50%", "Robot battery level is more than 50%", ["BATT_LEVEL"] ) );
-		assert( allPossibleConstraints.length == 2 );
+		as.addPossibleConstraint( new Constraint( 2, "BATTERY>50", "Battery > 50%", "Robot battery level is more than 50%", ["BATT_LEVEL"] ) );
+		assert( as.allPossibleConstraints.length == 2 );
 		auto lambdaFunction = ( ref string[] codeTestedStates, ref GenericState[string] sysStates, ref GenericState[string] statesNeedModif ) { 
 			return true; 
 		};
-		allPossibleConstraints[$-1].WaitingStates = lambdaFunction;
+		as.allPossibleConstraints["BATTERY>50"].WaitingStates = lambdaFunction;
 
 
 		// adding Actions
 		GenericAction ga1 = new GenericAction( 1, "MOVE", "Motion", "action to move the robot toward a given 2D location", 10 );
-
-		addPossibleAction( ga1 );
+		as.addPossibleAction( ga1 );
 
 
 		//GenericAction[] allPossibleActions;

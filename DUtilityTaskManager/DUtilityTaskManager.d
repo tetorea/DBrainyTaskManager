@@ -12,7 +12,7 @@ import Utils;
 
 void main(string[] args) {
 	
-	log = Log(stderrLogger, stdoutLogger(LogLevel.info), fileLogger("DUTM_log"));
+	log = Log(stderrLogger, stdoutLogger(LogLevel.info), fileLogger("DUTM_test.log"));
 
 	float f = 3.5;
 	string str = "dsfgsdgf";

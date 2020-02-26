@@ -45,7 +45,9 @@ class Constraint {
 // examples of WaitingStates functions :
 
 /// returns true if some elements are not in the good state
-bool WaitingBooleanState( ref string[] codeTestedStates, ref GenericState[string] systemStates, ref GenericState[string] statesNeedingModifications )
+static bool WaitingBooleanState( ref string[] codeTestedStates, 
+						  ref GenericState[string] systemStates, 
+						  ref GenericState[string] statesNeedingModifications )
 {
 	ulong stateToWait = codeTestedStates.length;
 

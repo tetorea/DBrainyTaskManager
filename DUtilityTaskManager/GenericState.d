@@ -245,26 +245,26 @@ class GenericState {
 	{
 		// fonction appellee juste avant main() si les unit test ont ete activés a la compilation avec le switch -unittest
 		writeln( "Test State LONG - VALUE ..." );
-		GenericState etatBatterie = new GenericState( 4522, 1, "ETAT_BATT", "etatBatterie", StateType.LONG, StateDimension.VALUE, StateControl.FULL_CONTROL, 5, [SystemRessources.CAMERA, SystemRessources.WHEEL] );
-		assert( etatBatterie.value == 4522 );
+		GenericState etatBatterie = new GenericState( Variant(4522), 1, "ETAT_BATT", "etatBatterie", StateDimension.VALUE, StateControl.FULL_CONTROL, 5, [SystemRessources.NULL] );
+		assert( etatBatterie.getValue == Variant(4522) );
 
 		string strJson = etatBatterie.save!long();
 		writeln("etatBatterie1 : ", strJson );
 
-		GenericState etatBatterie2 = new GenericState( 0 );
-		etatBatterie2.load( strJson );
-		strJson = etatBatterie2.save();
+		GenericState etatBatterie2 = new GenericState( Variant(0) );
+		etatBatterie2.load!long( strJson );
+		strJson = etatBatterie2.save!long();
 		writeln("etatBatterie2 : ", strJson );
 
 
 		writeln( "Test State DOUBLE[] - SET ..." );
-		GenericState etatLongueur = new GenericState( [ 3.14, 8841.412, -41.7771 ], 2, "ETAT_LONG", "etatLongueur", StateType.DOUBLE, StateDimension.SET, StateControl.PARTIAL_CONTROL, 10, [SystemRessources.ARM] );
-		strJson = etatLongueur.save();
+		GenericState etatLongueur = new GenericState( Variant([ 3.14, 8841.412, -41.7771 ]), 2, "ETAT_LONG", "etatLongueur", StateDimension.SET, StateControl.PARTIAL_CONTROL, 10, [SystemRessources.ARM] );
+		strJson = etatLongueur.save!double();
 		writeln("etatLongueur : ", strJson );
 
-		GenericState etatLongueur2 = new GenericState( 0 );
-		etatLongueur2.load( strJson );
-		strJson = etatLongueur2.save();
+		GenericState etatLongueur2 = new GenericState( Variant(0) );
+		etatLongueur2.load!double( strJson );
+		strJson = etatLongueur2.save!double();
 		writeln("etatLongueur2 : ", strJson );		
 	}
 }
