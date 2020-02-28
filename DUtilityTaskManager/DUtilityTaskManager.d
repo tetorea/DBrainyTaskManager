@@ -7,7 +7,6 @@ import std.stdio;
 import std.variant;
 
 import State;
-import Ressources;
 import Utils;
 
 void main(string[] args) {
@@ -28,7 +27,7 @@ void main(string[] args) {
 
 	// test State !!
 	writeln( "Test State LONG - VALUE..." );
-	GenericState etatBatterie = new GenericState( Variant(4522), 1, "BATTERIE", "etatBatterie", StateDimension.VALUE, StateControl.FULL_CONTROL, 5, [SystemRessources.CAMERA, SystemRessources.WHEEL] );
+	GenericState etatBatterie = new GenericState( Variant(4522), 1, "BATTERIE", "etatBatterie", StateDimension.VALUE, StateControl.FULL_CONTROL, 5, [1,2] );
 	string strJson = etatBatterie.save!int();
 	writeln("etatBatterie1 : ", strJson );
 
@@ -39,7 +38,7 @@ void main(string[] args) {
 
 
 	// test State double[] !!
-	GenericState etatLongueur = new GenericState( Variant([ 3.14, 8841.412, -41.7771 ]), 2, "LONGUEUR", "etatLongueur", StateDimension.SET, StateControl.PARTIAL_CONTROL, 10, [SystemRessources.ARM] );
+	GenericState etatLongueur = new GenericState( Variant([ 3.14, 8841.412, -41.7771 ]), 2, "LONGUEUR", "etatLongueur", StateDimension.SET, StateControl.PARTIAL_CONTROL, 10, [3] );
 
 	strJson = etatLongueur.save!double();
 	writeln("etatLongueur : ", strJson );

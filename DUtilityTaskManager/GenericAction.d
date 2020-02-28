@@ -2,7 +2,6 @@ module Action;
 
 import State;
 import Constraint;
-import Ressources;
 
 import std.datetime.stopwatch : benchmark, StopWatch, AutoStart;
 import core.time : Duration;
@@ -14,7 +13,6 @@ class GenericAction {
 	// action identification
 	ulong id;
 	string code = "";
-	string name = "";
 	string description = "";
 	ulong priority = 100;			// used to favor some actions instead of others if all are available
 
@@ -34,7 +32,7 @@ class GenericAction {
 	// Parametres à remplir a l'initialisation de l'action
 	Constraint preConditions;		// contraintes à résoudre avant d'activer l'action. Ces contraintes dépendent d'états dont le système a une influence sur les valeurs
 	Constraint preRequisites;		// contraintes à résoudre avant d'activer l'action. Ces contraintes dépendent d'états sur lesquels on n'a pas d'influence. On doit juste attendre...
-	SystemRessources[] ressources;	// liste de tous les éléments qui sont utilisés pendant cette action. 2 actions ne peuvent pas etre executees en meme temps si elles utilisent la meme ressource!
+	int[] ressources;				// liste de tous les éléments qui sont utilisés pendant cette action. 2 actions ne peuvent pas etre executees en meme temps si elles utilisent la meme ressource!
 	Variant[] optimalParameters;	// les parametres a passer éventuellement dans l'action, le programme devra essayer plusieurs valeurs pour chaque parametre afin de trouver une bonne solution!
 	GenericState[] results;			// liste des états modifiés par cette action
 
@@ -54,15 +52,13 @@ class GenericAction {
 
 	this(   ulong id = 0, 
 			string code = "", 
-			string name = "", 
 			string description = "", 
 			uint priority = 0, 
-			SystemRessources[] ressources = [SystemRessources.NULL]
+			int[] ressources = []
 			 ) 
     { 
 		this.id = id;
 		this.code = code;
-		this.name = name;
 		this.description = description;
 		this.priority = priority;
 		this.ressources = ressources;

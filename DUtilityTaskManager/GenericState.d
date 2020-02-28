@@ -1,6 +1,5 @@
 module State;
 
-import Ressources;
 import Utils;
 
 import std.conv;
@@ -37,11 +36,11 @@ the basic State class used to store the value(s) of a specific State
 class GenericState {
 	ulong id;
 	string code;
-	string name;
+	string description;
 	StateDimension dim;
 	StateControl control;
-	uint priority;							// un etat de priorite 1 doit etre atteint après un état de priorité plus élevé
-    SystemRessources[] ressources;		// the ressources linked to this state
+	uint priority;			// un etat de priorite 1 doit etre atteint après un état de priorité plus élevé
+    int[] ressources;		// the ressources linked to this state
 
 	Variant value;
 	ulong valueLength;
@@ -50,17 +49,17 @@ class GenericState {
 	this(   Variant val,
 			ulong id = 0, 
 			string code = "", 
-			string name = "", 
+			string description = "", 
 			StateDimension dim = StateDimension.NULL, 
 			StateControl control = StateControl.NULL, 
 			uint priority = 0, 
-			SystemRessources[] ressources = [SystemRessources.NULL]
+			int[] ressources = []
 		) 
     { 
 		this.value = val;
 		this.id = id;
 		this.code = code;
-		this.name = name;
+		this.description = description;
 		this.dim = dim;
 		this.control = control;
 		this.priority = priority;
@@ -138,7 +137,7 @@ class GenericState {
 
 		try{
 			jv.object["code"] = JSONValue( code );
-			jv.object["name"] = JSONValue( name );
+			jv.object["description"] = JSONValue( description );
 			jv.object["dim"] = JSONValue( dim );
 			jv.object["control"] = JSONValue( control );
 			jv.object["priority"] = JSONValue( priority );
@@ -207,8 +206,8 @@ class GenericState {
 		code = ("code" in j).str;
 		if( code == null ) return false;
 
-		name = ("name" in j).str;
-		if( name == null ) return false;
+		description = ("description" in j).str;
+		if( description == null ) return false;
 
 		dim = cast(StateDimension) ("dim" in j).integer;
 		control = cast(StateControl) ("control" in j).integer;
@@ -216,7 +215,7 @@ class GenericState {
 
 		auto ress = ("ressources" in j).array;
 		ressources.length = ress.length;
-		foreach( i, r; ress.dup ) ressources[i] = cast(SystemRessources) r.integer;
+		foreach( i, r; ress.dup ) ressources[i] = cast(int) r.integer;
 
 		// get the value, based on its dimension and type
 		try{

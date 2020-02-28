@@ -3,7 +3,6 @@ module AutonomousSystem;
 import Action;
 import ActionPath;
 import Constraint;
-import Ressources;
 import State;
 import Utils;
 
@@ -17,11 +16,12 @@ class AutonomousSystem{
 	GenericState[string] allPossibleStates;
 	GenericAction[string] allPossibleActions;
 	Constraint[string] allPossibleConstraints;
+	int[string] systemRessources;		// CAMERA, WHEEL, NECK, MIC, SPEAKER, ARM, SCREEN
 
 	// modified during the system life
 	GenericState[string] actualStates;
 	GenericState[string] goalStates;		// the states to reach, each goal has a priority : a state with a high priority must be reached before a lower priority
-	SystemRessources[string] systemRessourcesUsed;
+	int[string] systemRessourcesUsed;
 
 	// automatic regulation system!
 	// Some specific goals can be set when some system state values are reached (temperature, battery-level, date, recognized face, ...)
@@ -32,7 +32,7 @@ class AutonomousSystem{
 	////////////////////////////////////////////
 	// Mecanisms for simulation
 	GenericState[string] tmpStates;			// = actualStates during the simulation
-	SystemRessources[string] tmpRessources;	// = ressources used during the simulation
+	int[string] tmpRessources;	// = ressources used during the simulation
 
 	ActionPath[] possiblePaths;		// list of possible ActionPath to reach a specific set of states based from the current set of states
 	ulong chosenPath = -1;			// index og chosen Path in the array above (= with biggest score below)
@@ -128,22 +128,22 @@ class AutonomousSystem{
 		AutonomousSystem as = new AutonomousSystem( 1, "TESTSystem", "Description System" );
 
 		// adding States
-		GenericState gs1 = new GenericState( Variant(0.0), 1, "MOVED_DIST", "moved Distance", StateDimension.VALUE, StateControl.FULL_CONTROL, 5, [SystemRessources.NULL] );
+		GenericState gs1 = new GenericState( Variant(0.0), 1, "MOVED_DIST", "moved Distance", StateDimension.VALUE, StateControl.FULL_CONTROL, 5, [] );
 		as.addPossibleState( gs1 );
 		assert( as.allPossibleStates.length == 1 );
 		
 		as.addPossibleState( gs1 );	// id is the same, so shouldn't be added!
 		assert( as.allPossibleStates.length == 1 );
 
-		GenericState gs2 = new GenericState( Variant(0), 2, "FACE_RECO", "Face Recognized", StateDimension.VALUE, StateControl.FULL_CONTROL, 0, [SystemRessources.CAMERA] );
+		GenericState gs2 = new GenericState( Variant(0), 2, "FACE_RECO", "Face Recognized", StateDimension.VALUE, StateControl.FULL_CONTROL, 0, [1] );
 		as.addPossibleState( gs2 );
 		assert( as.allPossibleStates.length == 2 );
 
-		GenericState gs3 = new GenericState( Variant(true), 3, "AT_HOME", "At Home", StateDimension.VALUE, StateControl.FULL_CONTROL, 20, [SystemRessources.NULL] );
+		GenericState gs3 = new GenericState( Variant(true), 3, "AT_HOME", "At Home", StateDimension.VALUE, StateControl.FULL_CONTROL, 20, [] );
 		as.addPossibleState( gs3 );
 		assert( as.allPossibleStates.length == 3 );
 
-		GenericState gs4 = new GenericState( Variant(100), 4, "BATT_LEVEL", "Battery Level", StateDimension.VALUE, StateControl.AUTONOMOUS, 5, [SystemRessources.NULL] );
+		GenericState gs4 = new GenericState( Variant(100), 4, "BATT_LEVEL", "Battery Level", StateDimension.VALUE, StateControl.AUTONOMOUS, 5, [] );
 		as.addPossibleState( gs4 );
 		assert( as.allPossibleStates.length == 4 );
 

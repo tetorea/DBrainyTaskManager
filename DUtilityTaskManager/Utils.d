@@ -2,6 +2,7 @@ module Utils;
 
 import std.variant;
 
+
 ulong dimensions( Variant v ){
 	if( !v.hasValue ) return 0;
 
@@ -62,16 +63,6 @@ uint orAbove(LogLevel level) pure
     return [EnumMembers!LogLevel].find(level).reduce!"a | b";
 }
 
-///
-unittest
-{
-    with (LogLevel)
-    {
-        assert(trace.orAbove == (trace | info | warn | error | fatal));
-        assert(fatal.orAbove == fatal);
-    }
-}
-
 /// Returns a bit set containing the level and all levels below.
 @safe
 uint orBelow(LogLevel level) pure
@@ -79,15 +70,6 @@ uint orBelow(LogLevel level) pure
     return [EnumMembers!LogLevel].retro.find(level).reduce!"a | b";
 }
 
-///
-unittest
-{
-    with (LogLevel)
-    {
-        assert(trace.orBelow == trace);
-        assert(fatal.orBelow == (trace | info | warn | error | fatal));
-    }
-}
 
 @safe
 bool disabled(LogLevel level) pure
@@ -262,14 +244,6 @@ string[] archiveFiles(size_t n, string path)
         .array;
 }
 
-///
-unittest
-{
-    assert(1.archiveFiles("dir/log.ext") == ["dir/log-1.ext"]);
-    assert(10.archiveFiles("log").startsWith("log-01"));
-    assert(10.archiveFiles("log").endsWith("log-10"));
-}
-
 abstract class Logger
 {
     private uint levels;
@@ -416,20 +390,6 @@ void layout(Writer)(ref Writer writer, const ref EventInfo eventInfo,
     }
 }
 
-unittest
-{
-    EventInfo eventInfo;
-
-    eventInfo.time = SysTime.fromISOExtString("2003-02-01T11:55:00.123456Z");
-    eventInfo.level = LogLevel.error;
-    eventInfo.file = "log.d";
-    eventInfo.line = 42;
-
-    auto writer = appender!string;
-
-    layout(writer, eventInfo, (scope Sink sink) { sink.put("don't panic"); });
-    assert(writer.data == "2003-02-01T11:55:00.123+00:00 error log.d:42 don't panic\n");
-}
 
 // SysTime.toISOExtString has no fixed length and no time-zone offset for local time
 private void _toISOExtString(W)(SysTime time, ref W writer)
@@ -440,17 +400,6 @@ if (isOutputRange!(W, char))
     time.utcOffset._toISOString(writer);
 }
 
-unittest
-{
-    auto dateTime = DateTime(2003, 2, 1, 12);
-    auto fracSecs = 123_456.usecs;
-    auto timeZone =  new immutable SimpleTimeZone(1.hours);
-    auto time = SysTime(dateTime, fracSecs, timeZone);
-    auto writer = appender!string;
-
-    time._toISOExtString(writer);
-    assert(writer.data == "2003-02-01T12:00:00.123+01:00");
-}
 
 // SimpleTimeZone.toISOString is private
 @safe
@@ -462,20 +411,4 @@ if (isOutputRange!(W, char))
 
     abs(offset).split!("hours", "minutes")(hours, minutes);
     writer.formattedWrite!"%s%02d:%02d"(offset.isNegative ? '-' : '+', hours, minutes);
-}
-
-unittest
-{
-    auto writer = appender!string;
-
-    90.minutes._toISOString(writer);
-    assert(writer.data == "+01:30");
-}
-
-unittest
-{
-    auto writer = appender!string;
-
-    (-90).minutes._toISOString(writer);
-    assert(writer.data == "-01:30");
 }

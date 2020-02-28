@@ -2,7 +2,6 @@ module Constraint;
 
 import State;
 import Utils;
-import Ressources;
 
 import std.variant;
 
@@ -11,21 +10,18 @@ import std.variant;
 class Constraint {
     ulong id;
     string code = "";
-    string name = "";
-    string expression = ""; // expression de la contrainte. A remplir soi-meme, ce sera juste pour debug! ex : "temperature < 40 AND camera = true"
+    string description = ""; // expression de la contrainte. A remplir soi-meme, ce sera juste pour debug! ex : "temperature < 40 AND camera = true"
     string[] codeTestedStates; // the list of codes corresponding to the States linked to the constraint = They will be tested in the function WaitingStates
 
 	this(
 			ulong id = 0,
 			string code = "",
-			string name = "",
-			string expression = "",
+			string description = "",
 			string[] codeTestedStates = []
 		 ){
 			this.id = id;
 			this.code = code;
-			this.name = name;
-			this.expression = expression;
+			this.description = description;
 			this.codeTestedStates = codeTestedStates;
 	}
 

@@ -655,7 +655,6 @@
   <File path="DUtilityTaskManager.d" />
   <File path="GenericAction.d" />
   <File path="GenericState.d" />
-  <File path="Ressources.d" />
   <File path="Utils.d" />
  </Folder>
 </DProject>
