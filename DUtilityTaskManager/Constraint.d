@@ -5,13 +5,15 @@ import Utils;
 
 import std.variant;
 
-// classe pour representer les pre-conditions et pre-requis
-// La contrainte est générique, la classe doit être dérivée pour ecrire le corps des 2 fonctions, pour chaque contrainte spécifique
+/++ 
+Used to represent pre-conditions and pre-requisites
+The constraint has just generic variables and a function pointer that need to be initialized
++/
 class Constraint {
     ulong id;
     string code = "";
-    string description = ""; // expression de la contrainte. A remplir soi-meme, ce sera juste pour debug! ex : "temperature < 40 AND camera = true"
-    string[] codeTestedStates; // the list of codes corresponding to the States linked to the constraint = They will be tested in the function WaitingStates
+    string description = ""; /// Express the constraint. Used as a debug tool! ex : "temperature < 40 AND camera = true"
+    string[] codeTestedStates; /// the list of codes corresponding to the States linked to the constraint = They will be tested in the function WaitingStates
 
 	this(
 			ulong id = 0,
@@ -25,13 +27,16 @@ class Constraint {
 			this.codeTestedStates = codeTestedStates;
 	}
 
-    // function pointer to initialize
-    // arguments :
-    // - the list of the system current states
-    // - the list of states needing to be modified
-    // output :
-    // - true if some states need to be modified to satisfy the constraint
-    bool function( ref string[] codeTestedStates, 
+/++
+	function pointer to initialize
+    arguments :
+	- the list of codes for the states that are used in the function (will be filled by the system using the array of the class)
+	- the list of the system current states
+     - the list of states needing to be modified
+     output :
+     - true if some states need to be modified to satisfy the constraint
++/
+    bool function( ref string[] codeTestedStates,
 				   ref GenericState[string] systemStates, 
 				   ref GenericState[string] statesNeedingModifications ) 
 		WaitingStates = null;
