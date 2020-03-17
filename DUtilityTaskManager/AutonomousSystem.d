@@ -12,16 +12,12 @@ class AutonomousSystem{
 	string name = "";
 	string description = "";
 
-	// Must be initialized at the initialization of the system
-	GenericState[string] allPossibleStates;
-	GenericAction[string] allPossibleActions;
-	Constraint[string] allPossibleConstraints;
-	int[string] systemRessources;		// CAMERA, WHEEL, NECK, MIC, SPEAKER, ARM, SCREEN
-
-	// modified during the system life
-	GenericState[string] actualStates;
-	GenericState[string] goalStates;		// the states to reach, each goal has a priority : a state with a high priority must be reached before a lower priority
-	int[string] systemRessourcesUsed;
+	///////////////////////////////////////////////////////////
+	// Must be initialized when the system starts...
+	GenericState[string] allPossibleStates;			// each state must have a unique code
+	GenericAction[string] allPossibleActions;		// each action must have a unique code
+	Constraint[string] allPossibleConstraints;		// each constraint must have a unique code
+	int[string] systemRessources;					// CAMERA, WHEEL, NECK, MIC, SPEAKER, ARM, SCREEN, etc
 
 	// automatic regulation system!
 	// Some specific goals can be set when some system state values are reached (temperature, battery-level, date, recognized face, ...)
@@ -29,14 +25,21 @@ class AutonomousSystem{
 	GenericState[] goalActivatedByStateValue;
 
 
+	///////////////////////////////////////////////////////////
+	// keep track of the system context during the system life
+	GenericState[string] actualStates;		// a subset of allPossibleStates
+	GenericState[string] goalStates;		// a subset of allPossibleStates. The states to reach, each goal has a priority : a state with a high priority must be reached before a lower priority
+	int[string] systemRessourcesUsed;
+
+
 	////////////////////////////////////////////
 	// Mecanisms for simulation
-	GenericState[string] tmpStates;			// = actualStates during the simulation
-	int[string] tmpRessources;	// = ressources used during the simulation
+	GenericState[string] tmpStates;	// = actualStates during the simulation
+	int[string] tmpRessources;		// = systemRessourcesUsed during the simulation
 
 	ActionPath[] possiblePaths;		// list of possible ActionPath to reach a specific set of states based from the current set of states
-	ulong chosenPath = -1;			// index og chosen Path in the array above (= with biggest score below)
-	double chosenPathScore = 0;		// meilleur score 
+	ulong chosenPath = -1;			// index of chosen Path in the array above (= with biggest score below)
+	double chosenPathScore = 0;
 
 
 	// on ne peut pas faire de graph simple car a partir d'un etat, une action est possible ou non suivant les autres etats!!

@@ -32,6 +32,7 @@ class GenericAction {
 	// Parametres à remplir a l'initialisation de l'action
 	Constraint preConditions;		// contraintes à résoudre avant d'activer l'action. Ces contraintes dépendent d'états dont le système a une influence sur les valeurs
 	Constraint preRequisites;		// contraintes à résoudre avant d'activer l'action. Ces contraintes dépendent d'états sur lesquels on n'a pas d'influence. On doit juste attendre...
+	Constraint runConditions;		// contraintes qui doivent toujorus être satisfaites pendant l'exécution de l'action
 	int[] ressources;				// liste de tous les éléments qui sont utilisés pendant cette action. 2 actions ne peuvent pas etre executees en meme temps si elles utilisent la meme ressource!
 	Variant[] optimalParameters;	// les parametres a passer éventuellement dans l'action, le programme devra essayer plusieurs valeurs pour chaque parametre afin de trouver une bonne solution!
 	GenericState[] results;			// liste des états modifiés par cette action
